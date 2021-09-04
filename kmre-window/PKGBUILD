@@ -9,6 +9,7 @@ license=('GPL3')
 url='https://www.ubuntukylin.com/index.php'
 provides=("$pkgname")
 groups=(kmre)
+depends=(gsettings-qt)
 source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-window_${pkgver//_/-}_amd64.deb)
 sha512sums=('bf8bf5abf992c5aa64962060367e16d967f06aa64cdddccf8737016447e190274d12d547cccba902d5fe373c57b972a1fba88e04126fcf37d2e98674ad012e4a')
 
