@@ -1,0 +1,20 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kmre-modules-dkms
+pkgver=1.0.10
+pkgrel=1
+pkgdesc='Ubuntu Kylin KMRE, an android container.'
+arch=('x86_64')
+license=('GPL3')
+url='https://www.ubuntukylin.com/index.php'
+provides=("$pkgname")
+groups=(kmre)
+arch=('any')
+source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-modules-dkms_${pkgver}_all.deb)
+sha512sums=('b055014ae8d125b7cee8d93121afd2a8b7fe7813f0cc124388262a00fa2e6d53ea2916d961b161dfda658a7d73b48a682cffbc45637f324a039290639dcc70b4')
+    
+package(){
+    
+    #package
+    cd $srcdir
+    tar xpf data.tar.xz -C ${pkgdir}
+}

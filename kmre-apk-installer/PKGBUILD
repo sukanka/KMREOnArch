@@ -1,0 +1,17 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kmre-apk-installer
+pkgver=1.1.2
+pkgrel=1
+groups=(kmre)
+pkgdesc='Ubuntu Kylin KMRE, an android container.'
+arch=('x86_64')
+license=('GPL3')
+url='https://www.ubuntukylin.com/index.php'
+provides=("$pkgname")
+source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kmre-apk-installer_${pkgver}_amd64.deb)
+sha512sums=('309b87261f4237e78dda6e015d90592ace00db8b52c7a5bd80fa722a470c8638bf827dc92f27a53102f7f48485efe8d7e54cef23e1fd9216ef9d0d2f1e54beb1')
+
+package(){
+    cd $srcdir
+    tar xpf data.tar.xz -C ${pkgdir}
+}

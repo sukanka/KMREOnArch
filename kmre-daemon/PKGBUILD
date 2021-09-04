@@ -1,0 +1,37 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kmre-daemon
+pkgver=1.7.1
+pkgrel=1
+groups=(kmre)
+pkgdesc='Ubuntu Kylin KMRE, an android container.'
+arch=('x86_64')
+license=('GPL3')
+url='https://www.ubuntukylin.com/index.php'
+provides=("$pkgname")
+depends=('dbus-c++')
+makedepends=('cmake')
+source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-daemon_${pkgver}_amd64.deb
+'jsoncpp-1.7.4.tar.gz::https://github.com/open-source-parsers/jsoncpp/archive/refs/tags/1.7.4.tar.gz'
+)
+sha512sums=('e8018aac11e322ec14de06458999637aca40ee4c4b0bca24e29ad193585b8d6fd277f0e9e69fa10e5c9dc8a943e9ae861da17b965df345494c39859d7ca8b932'
+            'e674f6f885e2aa7258d3d3d7a14ef148b5182fd883a527b3b9d75334e778142a833bbb295796af503573b9745f889b8bc496a0b2e11dce1b9cc7f079ac538bf7')
+    
+
+build(){
+    cd $srcdir/jsoncpp-1.7.4
+    mkdir -p build/debug
+    cd build/debug
+    cmake -DCMAKE_BUILD_TYPE=release -DBUILD_STATIC_LIBS=OFF -DBUILD_SHARED_LIBS=ON -DARCHIVE_INSTALL_DIR=. -G "Unix Makefiles" ../..\
+    -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib
+    
+}
+package(){
+    cd $srcdir
+    tar xpf data.tar.xz -C ${pkgdir}
+    mv ${pkgdir}/lib  ${pkgdir}/usr
+    cd  $srcdir/jsoncpp-1.7.4/build/debug
+    make install DESTDIR="${pkgdir}"
+    cd ${pkgdir}/usr
+    rm -rf {include,lib/pkgconfig,lib/libjsoncpp.so}
+    
+}

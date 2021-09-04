@@ -1,0 +1,26 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kmre-manager
+pkgver=1.5.0
+pkgrel=1
+pkgdesc='Ubuntu Kylin KMRE, an android container.'
+arch=('x86_64')
+license=('GPL3')
+url='https://www.ubuntukylin.com/index.php'
+provides=("$pkgname")
+groups=(kmre)
+source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-manager_${pkgver}_amd64.deb
+'protocolbuff-3.6.1.tar.gz::https://github.com/protocolbuffers/protobuf/archive/refs/tags/v3.6.1.3.tar.gz'
+)
+sha512sums=('f4cbeaaeeff58588508f74e988b06663ab7fc3638ffdeb9d047dd7bbb1f85dc28253d0af8ecbf90c0b96eb80ba2bc4a4ef02e6b6a802aa7ef97903397ae8eded'
+            '9eadb46c7daa19e612516958169bc90943b38b429a4b2cf2171b66b57f50a2f8a9b66cbf58bdd44517af414b78e0f3ab2e1361891dc60ecd098185da2638d37e')
+
+build(){
+    cd $srcdir/protocolbuff-3.6.1.3
+}
+
+package(){
+
+    #package
+    cd $srcdir
+    tar xpf data.tar.xz -C ${pkgdir}
+}

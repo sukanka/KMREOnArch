@@ -1,0 +1,23 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=libkmre-emugl
+pkgver=1.2_26.2
+pkgrel=1
+provides=("$pkgname")
+groups=(kmre)
+source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/libkylin-kmre-emugl_${pkgver//_/-}_amd64.deb)
+sha512sums=('f66eef703bfee6c9f144e388a0afc8c3d0c8f3e43fe1ad6d13a5100aa78eff2bd30d186fc8e12c37c450820ae06b95aecb3b2a6d9e30bbf45a9773566f405183')
+    
+pkgdesc='Ubuntu Kylin KMRE, an android container.'
+arch=('x86_64')
+license=('GPL3')
+url='https://www.ubuntukylin.com/index.php'
+
+package(){
+    #package
+    cd $srcdir
+    tar xpf data.tar.xz -C ${pkgdir}
+    
+    mv ${pkgdir}/usr/lib/${arch}-linux-gnu/* ${pkgdir}/usr/lib/
+    rmdir ${pkgdir}/usr/lib/${arch}-linux-gnu
+
+} 

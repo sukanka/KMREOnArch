@@ -1,0 +1,22 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kmre-display-control
+pkgrel=1
+pkgver=1.4.6
+pkgdesc='Ubuntu Kylin KMRE, an android container.'
+arch=('x86_64')
+license=('GPL3')
+url='https://www.ubuntukylin.com/index.php'
+provides=("$pkgname")
+groups=(kmre)
+source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-display-control_${pkgver}_amd64.deb)
+sha512sums=('832370b4b2c6098183c4c7596029ab8b8f80510a0f4ab636f397ab2396f0ac9d478a75a0d4b8f4486d97a3aa377e70ac61d147d46107846e296637ada3dd7ab6')
+
+
+package(){
+    #package
+    cd $srcdir
+    tar xpf data.tar.xz -C ${pkgdir}
+    
+    mv ${pkgdir}/usr/lib/${arch}-linux-gnu/* ${pkgdir}/usr/lib/
+    rmdir ${pkgdir}/usr/lib/${arch}-linux-gnu
+}
