@@ -9,18 +9,23 @@ url='https://www.ubuntukylin.com/index.php'
 provides=("$pkgname")
 groups=(kmre)
 source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-manager_${pkgver}_amd64.deb
-'protocolbuff-3.6.1.tar.gz::https://github.com/protocolbuffers/protobuf/archive/refs/tags/v3.6.1.3.tar.gz'
+'protocolbuff-3.6.1.deb::http://ftp.br.debian.org/debian/pool/main/p/protobuf/libprotobuf17_3.6.1.3-2_amd64.deb'
 )
 sha512sums=('f4cbeaaeeff58588508f74e988b06663ab7fc3638ffdeb9d047dd7bbb1f85dc28253d0af8ecbf90c0b96eb80ba2bc4a4ef02e6b6a802aa7ef97903397ae8eded'
-            '9eadb46c7daa19e612516958169bc90943b38b429a4b2cf2171b66b57f50a2f8a9b66cbf58bdd44517af414b78e0f3ab2e1361891dc60ecd098185da2638d37e')
+            '1a3d2d5a4d511a61792cbde4bc1749ee4dc8a13d85e0cd07fb08a921d5e67bd0addb986207d7279e7b94ae5bda10af49204484894f27078db730296063ba6cce')
 
-build(){
-    cd $srcdir/protocolbuff-3.6.1.3
-}
-
+noextract=('protocolbuff-3.6.1.deb')
 package(){
 
     #package
     cd $srcdir
+    # kylin-kmre-manager
     tar xpf data.tar.xz -C ${pkgdir}
+    # protocolbuff-3.6.1.deb
+    bsdtar -xf protocolbuff-3.6.1.deb -C ${srcdir}
+    tar xpf ${srcdir}/data.tar.xz  -C ${pkgdir}
+    
+    mv ${pkgdir}/usr/lib/${arch}-linux-gnu/* ${pkgdir}/usr/lib/
+    rm -rf ${pkgdir}/usr/lib/${arch}-linux-gnu/
+    
 }
