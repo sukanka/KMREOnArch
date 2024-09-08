@@ -6,20 +6,42 @@ pkgrel=1
 pkgdesc='Ubuntu Kylin KMRE, an android container.'
 arch=('x86_64')
 license=('GPL3')
-url='https://www.ubuntukylin.com/index.php'
-provides=("$pkgname")
+url='https://gitee.com/openkylin/kylin-kmre-window'
 groups=(kmre)
 depends=(gsettings-qt)
-source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-window_${pkgver//_/-}_amd64.deb)
-sha512sums=('bf8bf5abf992c5aa64962060367e16d967f06aa64cdddccf8737016447e190274d12d547cccba902d5fe373c57b972a1fba88e04126fcf37d2e98674ad012e4a')
+source=(git+${url}.git)
+sha512sums=('SKIP')
+depends=(
+    qt5-{base,svg,webengine,x11extras,wayland}
+    gsettings-qt
+    speexdsp
+    kwayland5
+    kmre-display-control
+    libxinerama
+)
+makedepends=(
+    git lsb-release
+    qt5-{multimedia,tools}
+    boost
+    protobuf
+)
 
-package(){
-    
-    
-    #package
-    cd $srcdir
-    tar xpf data.tar.xz -C ${pkgdir}
+prepare() {
+    cd ${srcdir}/kylin-${pkgname}
+    sed -i '/dpkg-buildflags/d' */*.pro
+    sed -i window/display/displaybackend/display_control.cpp \
+        -e 's|"display_control_api_functions.h"|<DisplayControl/display_control_api_functions.h>|'
+    # archhlinux are recognised as KYLIN_V10, but this definition breaks compile, let's make it pro!
+    sed -i window/window.pro \
+        -e 's|isEqual(V10_PRO, 0)|isEqual(V10_PRO, 1)|'
+}
 
-
-
-} 
+build() {
+    cd ${srcdir}/kylin-${pkgname}
+    qmake .
+    make
+}
+package() {
+    cd ${srcdir}/kylin-${pkgname}
+    INSTALL_ROOT="${pkgdir}" make install
+}

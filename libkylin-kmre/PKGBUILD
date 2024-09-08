@@ -1,0 +1,28 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+
+pkgname=libkylin-kmre
+pkgver=1.3.1
+pkgrel=1
+provides=("$pkgname")
+groups=(kmre)
+pkgdesc='Ubuntu Kylin KMRE, an android container.'
+arch=('x86_64')
+license=('Apache-2.0')
+url='https://gitee.com/openkylin/libkylin-kmre'
+source=(git+${url}.git)
+sha512sums=('SKIP')
+makedepends=(git protobuf)
+
+build() {
+    cd $srcdir/libkylin-kmre
+    protoc -I=./ --cpp_out=./ KmreCore.proto
+    g++ -shared main.cc kmre_socket.cc KmreCore.pb.cc \
+        -o libkmre.so \
+        ${CXXFLAGS} ${LDFLAGS} ${LTOFLAGS}
+
+}
+
+package() {
+    cd $srcdir/libkylin-kmre
+    install -Dm755 libkmre.so -t ${pkgdir}/usr/lib
+}

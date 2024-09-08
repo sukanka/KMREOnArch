@@ -3,3 +3,6 @@
 *.zip
 *.tar.gz
 *.part
+kylin*
+*.log
+libkylin-kmre/libkylin-kmre

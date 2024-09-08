@@ -4,19 +4,39 @@ pkgrel=1
 pkgver=1.4.6
 pkgdesc='Ubuntu Kylin KMRE, an android container.'
 arch=('x86_64')
-license=('GPL3')
-url='https://www.ubuntukylin.com/index.php'
-provides=("$pkgname")
+license=('GPL-2.0-only')
+url='https://gitee.com/openkylin/kylin-kmre-display-control'
 groups=(kmre)
-source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-display-control_${pkgver}_amd64.deb)
-sha512sums=('832370b4b2c6098183c4c7596029ab8b8f80510a0f4ab636f397ab2396f0ac9d478a75a0d4b8f4486d97a3aa377e70ac61d147d46107846e296637ada3dd7ab6')
+source=(git+${url}.git)
+sha512sums=('SKIP')
+makedepends=(
+    cmake
+    git lsb-release
+    ninja
+    python
+)
+prepare() {
+    cd ${srcdir}/kylin-${pkgname}
+    sed -i host/display-control/display_control.c \
+        -e '30a #include "utils/debug.h"'
 
+}
+build() {
+    local cmake_args=(
+        -G Ninja
+        -DCMAKE_INSTALL_PREFIX=/usr
+        -DCMAKE_INSTALL_LIBDIR=/usr/lib
+        -DCMAKE_BUILD_TYPE=None
+    )
+    cd ${srcdir}/
+    install -d build
+    cmake -S kylin-${pkgname} -B build "${cmake_args[@]}"
+    ninja -C build
+}
 
-package(){
-    #package
-    cd $srcdir
-    tar xpf data.tar.xz -C ${pkgdir}
-    
-    mv ${pkgdir}/usr/lib/${arch}-linux-gnu/* ${pkgdir}/usr/lib/
-    rmdir ${pkgdir}/usr/lib/${arch}-linux-gnu
+package() {
+    cd ${srcdir}/build
+    DESTDIR="$pkgdir" ninja install
+    cd ${srcdir}/kylin-${pkgname}/host
+    cp -rf include ${pkgdir}/usr
 }

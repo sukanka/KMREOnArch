@@ -3,18 +3,21 @@ pkgname=kmre-image-data
 pkgver=2.0_210819.11
 pkgrel=1
 pkgdesc='Ubuntu Kylin KMRE, an android container.'
-arch=('x86_64')
-license=('GPL3')
-url='https://www.ubuntukylin.com/index.php'
+arch=('any')
+license=('Apache-2.0')
+url='https://gitee.com/openkylin/kylin-kmre-image-data'
 provides=("$pkgname")
 groups=(kmre)
-source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-image-data-x64_${pkgver//_/-}_amd64.deb)
-sha512sums=('78b2e63852269c0866ae4d71f577e2b230e223dc6f02706331e65cccdf9d0b874cdb268c1b1ad9bf4a5e815fb6d7c42ecee0b2e883172d46e4bfa46e1e7913a9')
+source=(
+    git+${url}.git
+    git+${url}-x64.git
+)
+makedepends=(git)
+sha512sums=('SKIP' 'SKIP')
 
+package() {
 
-package(){
-    
     #package
-    cd $srcdir
-    tar xpf data.tar.xz -C ${pkgdir}
+    cd $srcdir/kylin-${pkgname}
+    install -Dm644 data/kmre.conf ${pkgdir}/usr/share/kmre/kmre.conf
 }

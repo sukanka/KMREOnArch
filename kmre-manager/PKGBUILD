@@ -4,33 +4,37 @@ pkgver=1.5.0
 pkgrel=1
 pkgdesc='Ubuntu Kylin KMRE, an android container.'
 arch=('x86_64')
-license=('GPL3')
-url='https://www.ubuntukylin.com/index.php'
-provides=("$pkgname")
+license=('Apache-2.0')
+url='https://gitee.com/openkylin/kylin-kmre-manager'
 groups=(kmre)
-depends=('boost-libs')
-source=(${pkgname}-${pkgver}-${arch}.deb::http://archive.ubuntukylin.com/ubuntukylin/pool/partner/kylin-kmre-manager_${pkgver}_amd64.deb
-'protocolbuff-3.6.1.deb::http://ftp.br.debian.org/debian/pool/main/p/protobuf/libprotobuf17_3.6.1.3-2_amd64.deb'
+source=(
+    git+${url}.git
 )
-sha512sums=('f4cbeaaeeff58588508f74e988b06663ab7fc3638ffdeb9d047dd7bbb1f85dc28253d0af8ecbf90c0b96eb80ba2bc4a4ef02e6b6a802aa7ef97903397ae8eded'
-            '1a3d2d5a4d511a61792cbde4bc1749ee4dc8a13d85e0cd07fb08a921d5e67bd0addb986207d7279e7b94ae5bda10af49204484894f27078db730296063ba6cce')
+sha512sums=('SKIP')
 
-noextract=('protocolbuff-3.6.1.deb')
-package(){
+depends=(
 
-    #package
-    cd $srcdir
-    # kylin-kmre-manager
-    tar xpf data.tar.xz -C ${pkgdir}
-    # protocolbuff-3.6.1.deb
-    bsdtar -xf protocolbuff-3.6.1.deb -C ${srcdir}
-    tar xpf ${srcdir}/data.tar.xz  -C ${pkgdir}
-    
-    mv ${pkgdir}/usr/lib/${arch}-linux-gnu/* ${pkgdir}/usr/lib/
-    rm -rf ${pkgdir}/usr/lib/${arch}-linux-gnu/
-    ln -s /usr/lib/libboost_filesystem.so ${pkgdir}/usr/lib/libboost_filesystem.so.1.71.0
-    ln -s /usr/lib/libboost_log.so ${pkgdir}/usr/lib/libboost_log.so.1.71.0
-    ln -s /usr/lib/libboost_thread.so ${pkgdir}/usr/lib/libboost_thread.so.1.71.0
-    
-    
+    qt5-{base,svg}
+    gsettings-qt
+    speexdsp
+
+)
+makedepends=(
+    git lsb-release
+    qt5-{multimedia,tools}
+    boost
+)
+
+prepare() {
+    cd ${srcdir}/kylin-${pkgname}
+    sed -i '/dpkg-buildflags/d' */*.pro
+}
+build() {
+    cd ${srcdir}/kylin-${pkgname}
+    qmake .
+    make
+}
+package() {
+    cd ${srcdir}/kylin-${pkgname}
+    INSTALL_ROOT="${pkgdir}" make install
 }
