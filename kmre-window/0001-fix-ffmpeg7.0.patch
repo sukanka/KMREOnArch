@@ -1,0 +1,99 @@
+From 22b1c5467b5ae9637da611af223922965c9048d1 Mon Sep 17 00:00:00 2001
+From: sukanka <su975853527@gmail.com>
+Date: Sun, 8 Sep 2024 21:03:03 +0800
+Subject: [PATCH] fix ffmpeg7.0
+
+
+24	5	window/record/AV/Output/AudioEncoder.cpp
+7	2	window/record/AV/Output/Synchronizer.cpp
+
+diff --git a/window/record/AV/Output/AudioEncoder.cpp b/window/record/AV/Output/AudioEncoder.cpp
+index 576dd93..e52a4de 100644
+--- a/window/record/AV/Output/AudioEncoder.cpp
++++ b/window/record/AV/Output/AudioEncoder.cpp
+@@ -67,7 +67,12 @@ AVSampleFormat AudioEncoder::GetSampleFormat() {
+ }
+
+ unsigned int AudioEncoder::GetChannels() {
+-	return GetCodecContext()->channels;
++#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(61, 3, 100)
++  return GetCodecContext()->channels;
++#else
++  return GetCodecContext()->ch_layout.nb_channels;
++#endif
++
+ }
+
+ unsigned int AudioEncoder::GetSampleRate() {
+@@ -104,8 +109,15 @@ void AudioEncoder::PrepareStream(AVStream* stream, AVCodecContext* codec_context
+ 	}
+
+ 	codec_context->bit_rate = bit_rate;
+-	codec_context->channels = channels;
+-	codec_context->channel_layout = (channels == 1)? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO;
++#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(61, 3, 100)
++        codec_context->channels = channels;
++        codec_context->channel_layout =
++            (channels == 1) ? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO;
++#else
++        codec_context->ch_layout.nb_channels = channels;
++        codec_context->ch_layout.u.mask = (channels == 1) ? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO;
++#endif
++
+ 	codec_context->sample_rate = sample_rate;
+ 	codec_context->time_base.num = 1;
+ 	codec_context->time_base.den = sample_rate;
+@@ -137,7 +149,7 @@ void AudioEncoder::PrepareStream(AVStream* stream, AVCodecContext* codec_context
+ 			continue;
+ 		if(!AVCodecSupportsSampleFormat(codec, SUPPORTED_SAMPLE_FORMATS[i].m_format))
+ 			continue;
+-		syslog(LOG_INFO, "[AudioEncoder::PrepareStream] Using sample format %s.",
++		syslog(LOG_INFO, "[AudioEncoder::PrepareStream] Using sample format %s.",
+ 							SUPPORTED_SAMPLE_FORMATS[i].m_name.toStdString().c_str());
+ 		codec_context->sample_fmt = SUPPORTED_SAMPLE_FORMATS[i].m_format;
+ 		break;
+@@ -156,7 +168,14 @@ bool AudioEncoder::EncodeFrame(AVFrameWrapper* frame) {
+ 		assert((unsigned int) frame->GetFrame()->nb_samples == GetFrameSize());
+ #endif
+ #if SSR_USE_AVFRAME_CHANNELS
+-		assert(frame->GetFrame()->channels == GetCodecContext()->channels);
++#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(61, 3, 100)
++                assert(frame->GetFrame()->channels ==
++                       GetCodecContext()->channels);
++#else
++                assert(frame->GetFrame()->ch_layout.nb_channels ==
++                       GetCodecContext()->ch_layout.nb_channels);
++#endif
++
+ #endif
+ #if SSR_USE_AVFRAME_SAMPLE_RATE
+ 		assert(frame->GetFrame()->sample_rate == GetCodecContext()->sample_rate);
+diff --git a/window/record/AV/Output/Synchronizer.cpp b/window/record/AV/Output/Synchronizer.cpp
+index 38daa49..ca76b45 100644
+--- a/window/record/AV/Output/Synchronizer.cpp
++++ b/window/record/AV/Output/Synchronizer.cpp
+@@ -176,7 +176,12 @@ static std::unique_ptr<AVFrameWrapper> CreateAudioFrame(unsigned int channels, u
+ 	frame->GetFrame()->nb_samples = samples;
+ #endif
+ #if SSR_USE_AVFRAME_CHANNELS
+-	frame->GetFrame()->channels = channels;
++#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(61, 3, 100)
++        frame->GetFrame()->channels = channels;
++#else
++        frame->GetFrame()->ch_layout.nb_channels = channels;
++#endif
++
+ #endif
+ #if SSR_USE_AVFRAME_SAMPLE_RATE
+ 	frame->GetFrame()->sample_rate = sample_rate;
+@@ -858,7 +863,7 @@ void Synchronizer::SynchronizerThread() {
+ 			usleep(20000);
+ 		}
+ 		syslog(LOG_INFO, "[Synchronizer::SynchronizerThread] Synchronizer thread stopped.");
+-
++
+ 	} catch(const std::exception& e) {
+ 		m_error_occurred = true;
+ 		syslog(LOG_ERR, "[Synchronizer::SynchronizerThread] Exception '%s' in synchronizer thread.", e.what());
+--
+2.46.0

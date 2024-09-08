@@ -9,25 +9,34 @@ license=('GPL3')
 url='https://gitee.com/openkylin/kylin-kmre-window'
 groups=(kmre)
 depends=(gsettings-qt)
-source=(git+${url}.git)
-sha512sums=('SKIP')
+source=(git+${url}.git
+    0001-fix-ffmpeg7.0.patch
+)
+sha512sums=('SKIP'
+    'eb0ea19ffd128b0cfd499b4c38d2ff7c5f8eb03d52c744886237e59f6681d8f9d8f046406870e1466738e1bb78d80d66a16d9f682ef8e5a3b0c73e4eecbc391e')
 depends=(
-    qt5-{base,svg,webengine,x11extras,wayland}
+    qt5-{base,webengine,x11extras,wayland,multimedia}
     gsettings-qt
-    speexdsp
     kwayland5
     kmre-display-control
     libxinerama
+    protobuf
+    dconf
+    abseil-cpp
+
 )
 makedepends=(
     git lsb-release
-    qt5-{multimedia,tools}
+    qt5-tools
     boost
-    protobuf
+    speexdsp
+    patch
+    libepoxy
 )
 
 prepare() {
     cd ${srcdir}/kylin-${pkgname}
+    patch --strip=1 --ignore-whitespace <../0001-fix-ffmpeg7.0.patch
     sed -i '/dpkg-buildflags/d' */*.pro
     sed -i window/display/displaybackend/display_control.cpp \
         -e 's|"display_control_api_functions.h"|<DisplayControl/display_control_api_functions.h>|'

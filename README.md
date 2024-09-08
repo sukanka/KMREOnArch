@@ -25,5 +25,3 @@ Some packages are not included.
 
 ### specific
 - `kmre-image-data`: lacks `kmre-container-image.tar` which is not included in [the repo](https://gitee.com/openkylin/kylin-kmre-image-data), also, there is `kmre-image-data-x64` but their `kmre.conf` is the same, only `kmre-container-image.tar` differs, so there is no needed to package them separately.
-
-- `kmre-window` : cannot be built with `ffmpeg-7.0`, a similar issue is at [OpenBoard](https://github.com/OpenBoard-org/OpenBoard/issues/1002), we should add a patch for it.
