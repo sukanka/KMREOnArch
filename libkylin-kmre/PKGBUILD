@@ -1,17 +1,22 @@
 # Maintainer: sukanka <su975853527@gmail.com>
 
 pkgname=libkylin-kmre
-pkgver=1.3.1
+pkgver=3.9.8
 pkgrel=1
 provides=("$pkgname")
-groups=(kmre)
-pkgdesc='Ubuntu Kylin KMRE, an android container.'
+groups=(kylin-kmre)
+pkgdesc='kmre socket library API for other programs.'
 arch=('x86_64')
 license=('Apache-2.0')
 url='https://gitee.com/openkylin/libkylin-kmre'
 source=(git+${url}.git)
 sha512sums=('SKIP')
+depends=(gcc-libs glibc)
 makedepends=(git protobuf)
+
+pkgver() {
+    cat ${srcdir}/${pkgname}/debian/control | grep Standards-Version | cut -d : -f2 | tr -d ' '
+}
 
 build() {
     cd $srcdir/libkylin-kmre
@@ -19,7 +24,6 @@ build() {
     g++ -shared main.cc kmre_socket.cc KmreCore.pb.cc \
         -o libkmre.so \
         ${CXXFLAGS} ${LDFLAGS} ${LTOFLAGS}
-
 }
 
 package() {

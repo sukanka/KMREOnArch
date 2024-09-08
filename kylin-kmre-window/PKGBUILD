@@ -1,41 +1,36 @@
 # Maintainer: sukanka <su975853527@gmail.com>
 
-pkgname=kmre-window
-pkgver=1.9_7
+pkgname=kylin-kmre-window
+pkgver=3.9.6
 pkgrel=1
-pkgdesc='Ubuntu Kylin KMRE, an android container.'
+pkgdesc='A qt window to show android app'
 arch=('x86_64')
-license=('GPL3')
+license=('GPL-3.0-only')
 url='https://gitee.com/openkylin/kylin-kmre-window'
-groups=(kmre)
-depends=(gsettings-qt)
+groups=(kylin-kmre)
+depends=(
+    qt5-{base,webengine,x11extras,wayland,multimedia}
+    gsettings-qt
+    kwayland5
+    kylin-kmre-display-control
+    libxinerama
+    protobuf
+    dconf
+    abseil-cpp
+)
+makedepends=(git lsb-release qt5-tools boost speexdsp patch libepoxy)
 source=(git+${url}.git
     0001-fix-ffmpeg7.0.patch
 )
 sha512sums=('SKIP'
     'eb0ea19ffd128b0cfd499b4c38d2ff7c5f8eb03d52c744886237e59f6681d8f9d8f046406870e1466738e1bb78d80d66a16d9f682ef8e5a3b0c73e4eecbc391e')
-depends=(
-    qt5-{base,webengine,x11extras,wayland,multimedia}
-    gsettings-qt
-    kwayland5
-    kmre-display-control
-    libxinerama
-    protobuf
-    dconf
-    abseil-cpp
 
-)
-makedepends=(
-    git lsb-release
-    qt5-tools
-    boost
-    speexdsp
-    patch
-    libepoxy
-)
+pkgver() {
+    cat ${srcdir}/${pkgname}/debian/control | grep Standards-Version | cut -d : -f2 | tr -d ' '
+}
 
 prepare() {
-    cd ${srcdir}/kylin-${pkgname}
+    cd ${srcdir}/${pkgname}
     patch --strip=1 --ignore-whitespace <../0001-fix-ffmpeg7.0.patch
     sed -i '/dpkg-buildflags/d' */*.pro
     sed -i window/display/displaybackend/display_control.cpp \
@@ -46,11 +41,11 @@ prepare() {
 }
 
 build() {
-    cd ${srcdir}/kylin-${pkgname}
+    cd ${srcdir}/${pkgname}
     qmake .
     make
 }
 package() {
-    cd ${srcdir}/kylin-${pkgname}
+    cd ${srcdir}/${pkgname}
     INSTALL_ROOT="${pkgdir}" make install
 }

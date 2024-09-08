@@ -1,6 +1,6 @@
 # KMREOnArch
 Porting Ubuntu kylin KMRE to archlinux.
-# Usage
+## Usage
 note the last 4 commands is for user, so not requiring `sudo`
 ```
 sudo systemctl enable --now kylin-kmre-daemon.service
@@ -10,17 +10,8 @@ systemctl enable --user --now kylin-kmre-filewatcher.service
 systemctl enable --user --now kylin-kmre-manager.service
 ```
 
-## Clarification
-Some packages are not included.
-
-- `kmre-peony-vfs`: [Its repo](https://gitee.com/openkylin/peony-vfs-kylin-kmre) has nothing, and named `peony-vfs-kylin-kmre`
--  [kmre-modules-dkms](https://gitee.com/openkylin/kylin-kmre-modules-dkms):  no longer needed for `linux` and `linux-zen`, as stated by [archwiki](https://wiki.archlinux.org/title/Waydroid#Kernel_Modules)
-- `libkmre`: deleted, it's an Android application.
-
 ## Todo list
 ### general
-- rename all package name to `kylin-kmre-xxx`
-- check information for PKGBUILD like license and pkgver.
 - all modification in `prepare()` should be reported to upstream.
 
 ### specific

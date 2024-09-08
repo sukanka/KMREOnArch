@@ -1,0 +1,22 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kylin-kmre-image-data
+pkgver=3.9.5
+pkgrel=1
+pkgdesc='kmre image data'
+arch=('any')
+license=('Apache-2.0')
+url='https://gitee.com/openkylin/kylin-kmre-image-data'
+groups=(kylin-kmre)
+source=(git+${url}{,-x64}.git)
+makedepends=(git)
+sha512sums=('SKIP'
+            'SKIP')
+
+pkgver() {
+    cat ${srcdir}/${pkgname}/debian/control | grep Standards-Version | cut -d : -f2 | tr -d ' '
+}
+
+package() {
+    cd $srcdir/${pkgname}
+    install -Dm644 data/kmre.conf ${pkgdir}/usr/share/kmre/kmre.conf
+}

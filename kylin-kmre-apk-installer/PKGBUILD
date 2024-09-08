@@ -1,0 +1,32 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kylin-kmre-apk-installer
+pkgver=3.9.8
+pkgrel=1
+groups=(kylin-kmre)
+pkgdesc='A qt window to install apk packages.'
+arch=('x86_64')
+license=('GPL-3.0-only')
+url='https://gitee.com/openkylin/kylin-kmre-apk-installer'
+depends=(
+    libx11
+    openssl
+    qt5-{base,x11extras,svg}
+)
+makedepends=(git lsb-release qt5-tools)
+source=(git+${url}.git)
+sha512sums=('SKIP')
+
+pkgver() {
+    cat ${srcdir}/${pkgname}/debian/control | grep Standards-Version | cut -d : -f2 | tr -d ' '
+}
+
+build() {
+    cd ${srcdir}/${pkgname}
+    qmake .
+    make
+}
+
+package() {
+    cd ${srcdir}/${pkgname}
+    INSTALL_ROOT="${pkgdir}" make install
+}

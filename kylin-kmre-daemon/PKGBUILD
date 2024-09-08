@@ -1,9 +1,9 @@
 # Maintainer: sukanka <su975853527@gmail.com>
-pkgname=kmre-daemon
-pkgver=1.7.1
+pkgname=kylin-kmre-daemon
+pkgver=3.9.6
 pkgrel=1
-groups=(kmre)
-pkgdesc='Ubuntu Kylin KMRE, an android container.'
+groups=(kylin-kmre)
+pkgdesc='A DBus daemon for kmre'
 arch=('x86_64')
 license=('GPL-3.0-only')
 url='https://gitee.com/openkylin/kylin-kmre-daemon'
@@ -14,17 +14,16 @@ depends=(
     jsoncpp
     openssl
 )
-makedepends=(
-    cmake
-    git lsb-release
-    ninja
-
-)
-source=(git+https://gitee.com/openkylin/kylin-kmre-daemon.git)
+makedepends=(cmake git lsb-release ninja)
+source=(git+${url}.git)
 sha512sums=('SKIP')
 
+pkgver() {
+    cat ${srcdir}/${pkgname}/debian/control | grep Standards-Version | cut -d : -f2 | tr -d ' '
+}
+
 prepare() {
-    cd ${srcdir}/kylin-${pkgname}
+    cd ${srcdir}/${pkgname}
     sed -i CMakeLists.txt \
         -e 's|g++-9|g++|' \
         -e 's| /lib| /usr/lib|g'
@@ -32,6 +31,7 @@ prepare() {
     sed -i '30a #include <cstdint> ' src/utils.h
 
 }
+
 build() {
     local cmake_args=(
         -G Ninja
@@ -43,7 +43,7 @@ build() {
     )
     cd ${srcdir}/
     install -d build
-    cmake -S kylin-${pkgname} -B build "${cmake_args[@]}"
+    cmake -S ${pkgname} -B build "${cmake_args[@]}"
     ninja -C build
 }
 

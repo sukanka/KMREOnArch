@@ -1,0 +1,33 @@
+# Maintainer: sukanka <su975853527@gmail.com>
+pkgname=kylin-kmre-manager
+pkgver=3.9.8
+pkgrel=1
+pkgdesc='Communication and management module, backend manager, audio server, input control, filewatcher for KMRE.'
+arch=('x86_64')
+license=('Apache-2.0')
+url='https://gitee.com/openkylin/kylin-kmre-manager'
+groups=(kylin-kmre)
+depends=(qt5-{base,svg} gsettings-qt speexdsp alsa-lib)
+makedepends=(git lsb-release qt5-{multimedia,tools} boost)
+source=(git+${url}.git)
+sha512sums=('SKIP')
+
+pkgver() {
+    cat ${srcdir}/${pkgname}/debian/control | grep Standards-Version | cut -d : -f2 | tr -d ' '
+}
+
+prepare() {
+    cd ${srcdir}/${pkgname}
+    sed -i '/dpkg-buildflags/d' */*.pro
+}
+
+build() {
+    cd ${srcdir}/${pkgname}
+    qmake .
+    make
+}
+
+package() {
+    cd ${srcdir}/${pkgname}
+    INSTALL_ROOT="${pkgdir}" make install
+}

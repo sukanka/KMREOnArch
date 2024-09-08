@@ -1,29 +1,23 @@
 # Maintainer: sukanka <su975853527@gmail.com>
-pkgname=kmre-emugl
-pkgver=1.2_26.2
+pkgname=kylin-kmre-emugl
+pkgver=3.9.6
 pkgrel=1
 url='https://gitee.com/openkylin/kylin-kmre-emugl'
-pkgdesc='Ubuntu Kylin KMRE, an android container.'
+pkgdesc='emugl libraries for kylin-kmre'
 arch=('x86_64')
 license=('GPL-3.0-only')
-groups=(kmre)
+groups=(kylin-kmre)
 source=(git+${url}.git)
+sha256sums=('SKIP')
+makedepends=(git cmake ninja libunwind boost)
+depends=(libx11 libglvnd libpciaccess libdrm)
 
-makedepends=(
-    git
-    cmake
-    ninja
-    libunwind
-    boost
-)
-depends=(
-    libx11
-    libglvnd
-    libpciaccess
-    libdrm
-)
+pkgver() {
+    cat ${srcdir}/${pkgname}/debian/control | grep Standards-Version | cut -d : -f2 | tr -d ' '
+}
+
 prepare() {
-    cd kylin-${pkgname}
+    cd ${pkgname}
     sed -i CMakeLists.txt \
         -e '13a cmake_policy(SET CMP0072 NEW)'
     sed -i android-emu/android/utils/gles_config_detection.cpp \
@@ -43,14 +37,12 @@ build() {
         -DCMAKE_INSTALL_LIBDIR=/usr/lib
         -DCMAKE_BUILD_TYPE=None
     )
-    cd ${srcdir}/
     install -d build
-    cmake -S kylin-${pkgname} -B build "${cmake_args[@]}"
+    cmake -S ${pkgname} -B build "${cmake_args[@]}"
     ninja -C build
 }
+
 package() {
     cd ${srcdir}/build
     DESTDIR="$pkgdir" ninja install
-
 }
-sha256sums=('SKIP')
